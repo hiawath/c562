@@ -1,0 +1,14 @@
+
+build/
+arch/
+generated/
+part_drivers/
+stm32c5xx*
+utilities/
+cmake/
+
+.settings/
+.vscode
+
+.clangd
+mx.scratch
