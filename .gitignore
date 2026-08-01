@@ -7,6 +7,8 @@ stm32c5xx*
 utilities/
 cmake/
 
+*.base@*
+
 .settings/
 .vscode
 
