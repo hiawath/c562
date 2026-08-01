@@ -1,11 +1,19 @@
 #include "main.h"
-#include "stm32c5xx_hal_gpio.h"
+
+
+void HAL_EXTI_TriggerCallback(hal_exti_handle_t *hexti, hal_exti_trigger_t trigger)
+{
+    if (hexti == mx_gpio_default_exti13_gethandle())
+    {
+        // PC13 버튼 눌림 처리
+        HAL_GPIO_TogglePin(PA5_PORT, PA5_PIN);  // 예: LED 토글
+    }
+}
+
 void appMain() {
+  
 
   while (1) {
-    if (HAL_GPIO_ReadPin(HAL_GPIOC, HAL_GPIO_PIN_13) == HAL_GPIO_PIN_SET) {
-      HAL_GPIO_TogglePin(HAL_GPIOA, HAL_GPIO_PIN_5);
-      HAL_Delay(1000);
-    }
+    HAL_Delay(100);
   }
 }
