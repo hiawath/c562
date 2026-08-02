@@ -1,4 +1,4 @@
 #pragma once
 
-void appInit(void);
+system_status_t appInit(void);
 void appMain();

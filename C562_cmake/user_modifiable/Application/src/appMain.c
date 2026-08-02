@@ -1,6 +1,18 @@
 #include "main.h"
+#include <stdio.h>
+#include <string.h>
 
 
+#define RX_BUF_SIZE 64
+
+static uint8_t rx_buffer[RX_BUF_SIZE];
+static uint8_t tx_buffer[RX_BUF_SIZE];   // 송신 전용 버퍼 추가
+
+static volatile uint8_t uart_error_flag=0;
+static volatile uint8_t rx_done_flag = 0;
+static volatile uint32_t rx_received_size = 0;
+
+static hal_uart_handle_t *huart2;
 /* ------------------------------------------------------------------------ */
 /* 각 인터럽트 라인별 상태 플래그 (ISR에서 최소한의 작업만 하고,
    실제 처리는 메인 루프에서 하는 게 안전한 패턴)                          */
@@ -40,10 +52,41 @@ static void LimitSwitch_PB1_Callback(hal_exti_handle_t *hexti,
 }
 
 /* ------------------------------------------------------------------------ */
+/* weak 함수 오버라이드 (RegisterCallback 대신)                              */
+/* ------------------------------------------------------------------------ */
+void HAL_UART_RxCpltCallback(hal_uart_handle_t *huart, uint32_t size_byte,
+                              hal_uart_rx_event_types_t rx_event)
+{
+    if (huart == huart2)
+    {
+        (void)rx_event;
+        /* 받은 즉시 tx_buffer로 복사 (콜백 안이라 최대한 짧게) */
+        memcpy(tx_buffer, rx_buffer, size_byte);
+        rx_received_size = size_byte;
+        rx_done_flag = 1;
+    }
+}
+
+void HAL_UART_ErrorCallback(hal_uart_handle_t *huart) {
+  if (huart == huart2) {
+    uart_error_flag = 1;
+  }
+}
+
+/* ------------------------------------------------------------------------ */
 /* 초기화 — 각 라인에 콜백 등록                                             */
 /* ------------------------------------------------------------------------ */
-void appInit(void) {
+system_status_t appInit(void) {
   hal_status_t status;
+
+  huart2 = mx_usart2_uart_gethandle();
+  if (huart2 == NULL) {
+    return SYSTEM_PERIPHERAL_ERROR;
+  }
+
+  if (HAL_UART_ReceiveToIdle_DMA(huart2, rx_buffer, RX_BUF_SIZE) != HAL_OK) {
+    return SYSTEM_PERIPHERAL_ERROR;
+  }
 
   status = HAL_EXTI_RegisterTriggerCallback(mx_gpio_default_exti13_gethandle(),
                                             Button_PC13_Callback);
@@ -62,6 +105,8 @@ void appInit(void) {
   if (status != HAL_OK) {
     Error_Handler();
   }
+
+  return HAL_OK;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -70,13 +115,18 @@ void appInit(void) {
 void appMain(void) {
 
   appInit();
+  // 부팅 안내 메시지 LPDMA1(Tx)로 전송
+  const char *init_msg = "STM32C562 USART2 LPDMA(Rx:0 / Tx:1) Ready!\r\n";
+  HAL_UART_Transmit_DMA(mx_usart2_uart_gethandle(), (uint8_t *)init_msg,
+                        strlen(init_msg));
 
   while (1) {
     if (button_pressed_flag) {
       button_pressed_flag = 0;
       HAL_GPIO_TogglePin(PA5_PORT, PA5_PIN); // LED 토글
-      HAL_UART_Transmit(mx_usart2_uart_gethandle(), "hello\r\n", 8 , 100);
+      HAL_UART_Transmit_DMA(huart2, "hello\r\n", 8);
     }
+
 
     if (sensor_event_flag) {
       sensor_event_flag = 0;
@@ -87,5 +137,19 @@ void appMain(void) {
       limit_switch_flag = 0;
       // 리미트 스위치 처리 (예: 모터 정지)
     }
+
+          
+    if (uart_error_flag) {
+      uart_error_flag = 0;
+      HAL_UART_ReceiveToIdle_DMA(huart2, rx_buffer, RX_BUF_SIZE);
+    }
+
+    if (rx_done_flag)
+    {
+        rx_done_flag = 0;
+        HAL_UART_Transmit_DMA(huart2, tx_buffer, rx_received_size);  // tx_buffer에서 송신
+        HAL_UART_ReceiveToIdle_DMA(huart2, rx_buffer, RX_BUF_SIZE);  // rx_buffer는 다시 수신 전용
+    }
+    
   }
 }
