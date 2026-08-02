@@ -1,7 +1,5 @@
 #include "main.h"
-#include "mx_gpio_default.h"
-#include "stm32c5xx_hal_exti.h"
-#include "stm32c5xx_hal_gpio.h"
+
 
 /* ------------------------------------------------------------------------ */
 /* 각 인터럽트 라인별 상태 플래그 (ISR에서 최소한의 작업만 하고,
@@ -70,11 +68,14 @@ void appInit(void) {
 /* 메인 루프 — 플래그 확인 후 실제 처리                                      */
 /* ------------------------------------------------------------------------ */
 void appMain(void) {
+
   appInit();
+
   while (1) {
     if (button_pressed_flag) {
       button_pressed_flag = 0;
       HAL_GPIO_TogglePin(PA5_PORT, PA5_PIN); // LED 토글
+      HAL_UART_Transmit(mx_usart2_uart_gethandle(), "hello\r\n", 8 , 100);
     }
 
     if (sensor_event_flag) {
