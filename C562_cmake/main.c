@@ -16,13 +16,9 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stm32c562xx.h"
-#include "stm32c5xx_hal.h"
-#include "stm32c5xx_hal_gpio.h"
-
-#include "appMain.h"
 
 /* Private typedef -----------------------------------------------------------*/
+#include "appMain.h"
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -49,11 +45,7 @@ int main(void)
       * You can start your application code here
       */
     appMain();
-    while (1) {
-
-
-
-    }
+    while (1) {}
   }
 } /* end main */
 
