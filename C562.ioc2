@@ -1440,58 +1440,6 @@
     ],
     "needConfigurations": [
       {
-        "id": "ba8c2d16-6689-41ef-857c-18f233d16e02",
-        "needId": "ba8c2d16-6689-41ef-857c-18f233d16e02",
-        "pin": {
-          "name": "PA11",
-          "position": "44",
-          "type": "gpio",
-          "powerSource": "VDD",
-          "ioStructureOptions": [
-            "f",
-            "u"
-          ],
-          "ioType": "I/O",
-          "ioStructure": "FT",
-          "index": 11,
-          "port": "A"
-        },
-        "signal": {
-          "instance": "FDCAN1",
-          "name": "FDCAN1_RX",
-          "type": "alternate",
-          "alternateFunctionId": "AF9"
-        },
-        "pinned": false,
-        "ownedByUser": false
-      },
-      {
-        "id": "fc2f9127-71bf-44ba-8df4-8e8d0c6ab8fd",
-        "needId": "fc2f9127-71bf-44ba-8df4-8e8d0c6ab8fd",
-        "pin": {
-          "name": "PA12",
-          "position": "45",
-          "type": "gpio",
-          "powerSource": "VDD",
-          "ioStructureOptions": [
-            "f",
-            "u"
-          ],
-          "ioType": "I/O",
-          "ioStructure": "FT",
-          "index": 12,
-          "port": "A"
-        },
-        "signal": {
-          "instance": "FDCAN1",
-          "name": "FDCAN1_TX",
-          "type": "alternate",
-          "alternateFunctionId": "AF9"
-        },
-        "pinned": false,
-        "ownedByUser": false
-      },
-      {
         "id": "7f73b4a3-f0b3-478d-99b0-ab71ebacf2ad",
         "needId": "7f73b4a3-f0b3-478d-99b0-ab71ebacf2ad",
         "pin": {
@@ -1634,6 +1582,54 @@
           "type": "additional"
         },
         "pinned": false,
+        "ownedByUser": false
+      },
+      {
+        "id": "fc2f9127-71bf-44ba-8df4-8e8d0c6ab8fd",
+        "pin": {
+          "name": "PB9",
+          "position": "62",
+          "type": "gpio",
+          "powerSource": "VDD",
+          "ioStructureOptions": [],
+          "ioType": "I/O",
+          "ioStructure": "FT",
+          "index": 9,
+          "port": "B"
+        },
+        "signal": {
+          "instance": "FDCAN1",
+          "name": "FDCAN1_TX",
+          "type": "alternate",
+          "alternateFunctionId": "AF9"
+        },
+        "needId": "fc2f9127-71bf-44ba-8df4-8e8d0c6ab8fd",
+        "pinned": true,
+        "ownedByUser": false
+      },
+      {
+        "id": "ba8c2d16-6689-41ef-857c-18f233d16e02",
+        "pin": {
+          "name": "PB8",
+          "position": "61",
+          "type": "gpio",
+          "powerSource": "VDD",
+          "ioStructureOptions": [
+            "f"
+          ],
+          "ioType": "I/O",
+          "ioStructure": "FT",
+          "index": 8,
+          "port": "B"
+        },
+        "signal": {
+          "instance": "FDCAN1",
+          "name": "FDCAN1_RX",
+          "type": "alternate",
+          "alternateFunctionId": "AF9"
+        },
+        "needId": "ba8c2d16-6689-41ef-857c-18f233d16e02",
+        "pinned": true,
         "ownedByUser": false
       }
     ]

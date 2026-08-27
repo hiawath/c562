@@ -1,7 +1,7 @@
 {
   "disclaimer": "Do not modify this file as it is used by STM32CubeMX2 to determine what and how to update your project with new configuration",
   "version": "1.0.0",
-  "timestamp": "2026-08-27T06:45:37.220Z",
+  "timestamp": "2026-08-27T06:50:40.199Z",
   "files": [
     {
       "fileGroup": "project_file",
@@ -247,7 +247,7 @@
       "fileGroup": "generated",
       "checksum": {
         "algo": "sha256",
-        "digest": "075fc0d8dc2d220634ae14847c328137baa2200a3a7c48f76cd7f05a1ab2ddba"
+        "digest": "4fc0dfb995474b0d5fb2d5104a6c64a7bdbd3312e2579e013a8791285390f3d9"
       },
       "file": "generated/hal/mx_fdcan1.c"
     },
@@ -255,7 +255,7 @@
       "fileGroup": "generated",
       "checksum": {
         "algo": "sha256",
-        "digest": "7713698292ebdd5384dabe637686e35c1052f99303a06941f08507092f8714da"
+        "digest": "fc569e6bdab1f39714fb12aeb16b5e55bf7a116e0c503caf818438b635beaaaa"
       },
       "file": "generated/hal/mx_fdcan1.h"
     },
