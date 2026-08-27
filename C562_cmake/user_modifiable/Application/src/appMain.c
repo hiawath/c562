@@ -2,6 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "example.h"
+#include "mx_system.h"
+
+#include "mx_usart2.h" 
+#include "mx_basic_stdio_app.h"
 
 #define RX_BUF_SIZE 64
 
@@ -13,6 +18,7 @@ static volatile uint8_t rx_done_flag = 0;
 static volatile uint32_t rx_received_size = 0;
 
 static hal_uart_handle_t *huart2;
+app_status_t ExecStatus = EXEC_STATUS_UNKNOWN; /* application status */
 /* ------------------------------------------------------------------------ */
 /* 각 인터럽트 라인별 상태 플래그 (ISR에서 최소한의 작업만 하고,
    실제 처리는 메인 루프에서 하는 게 안전한 패턴)                          */
@@ -20,6 +26,8 @@ static hal_uart_handle_t *huart2;
 static volatile uint8_t button_pressed_flag = 0; // PC13
 static volatile uint8_t sensor_event_flag = 0;   // PA0
 static volatile uint8_t limit_switch_flag = 0;   // PB1
+
+
 
 static void Error_Handler(void) {
   __disable_irq();
@@ -73,11 +81,38 @@ void HAL_UART_ErrorCallback(hal_uart_handle_t *huart) {
   }
 }
 
+static void error_handler(void)
+{
+
+  while (1)
+  {
+    /* Repeated flashing status LED (50ms on and 2sec off) when execution loop is exited */
+    led_on(LED_0);
+    HAL_Delay(50);
+    led_off(LED_0);
+    HAL_Delay(2000);
+  }
+} /* end error_handler */
+
+/** brief:  Success notification
+  * retval: None (infinite loop)
+  */
+static void success_handler(void)
+{
+
+  /* Report success: the status LED remains turned on */
+  //led_on(LED_0);
+
+  //while (1);
+} 
+
 /* ------------------------------------------------------------------------ */
 /* 초기화 — 각 라인에 콜백 등록                                             */
 /* ------------------------------------------------------------------------ */
 system_status_t appInit(void) {
   hal_status_t status;
+   
+  mx_basic_stdio_init();
 
   huart2 = mx_usart2_uart_gethandle();
   if (huart2 == NULL) {
@@ -109,22 +144,56 @@ system_status_t appInit(void) {
   return HAL_OK;
 }
 
+
+
 /* ------------------------------------------------------------------------ */
 /* 메인 루프 — 플래그 확인 후 실제 처리                                      */
 /* ------------------------------------------------------------------------ */
 void appMain(void) {
-
+  
   appInit();
+
+  mx_system_init();
+
+  ExecStatus =app_init();
+
+
+  /* Run app_process if no error occurs  */
+    if (ExecStatus != EXEC_STATUS_ERROR)
+    {
+      ExecStatus = app_process();
+    }
+
+    if (ExecStatus == EXEC_STATUS_OK)
+    {
+      ExecStatus = app_deinit();
+    }
+
+      /* Report the example status */
+  if (ExecStatus == EXEC_STATUS_OK)
+  {
+    success_handler();
+  }
+  else
+  {
+    error_handler();
+  }
+
   // 부팅 안내 메시지 LPDMA1(Tx)로 전송
   const char *init_msg = "STM32C562 USART2 LPDMA(Rx:0 / Tx:1) Ready!\r\n";
   HAL_UART_Transmit_DMA(mx_usart2_uart_gethandle(), (uint8_t *)init_msg,
                         strlen(init_msg));
 
+                       
   while (1) {
     if (button_pressed_flag) {
       button_pressed_flag = 0;
       HAL_GPIO_TogglePin(PA5_PORT, PA5_PIN); // LED 토글
       HAL_UART_Transmit_DMA(huart2, "hello\r\n", 8);
+      
+
+
+
     }
 
 

@@ -19,6 +19,7 @@ include(cmake/components.cmake)
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
   # Add additional source files here
   user_modifiable/Application/src/appMain.c
+  user_modifiable/Application/src/example.c
 )
 
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
@@ -28,10 +29,13 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
 
 target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC
   # Add additional defined symbols here
+  USE_TRACE=1
+
 )
 
 target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC
   # Add additional compiler flags here
+
 )
 
 target_link_options(${CMAKE_PROJECT_NAME} PUBLIC
@@ -44,4 +48,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PUBLIC
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
   # Add additional linker libraries here
+)
+target_link_options(${CMAKE_PROJECT_NAME} PUBLIC
+  -u _printf_float
 )
